@@ -24,5 +24,17 @@ class ProxyList extends Backbone.Collection
   comparator: (model) ->
     -1 * model.get 'activeState'
 
+  byProtocol: (protos) ->
+    return new ProxyList @.filter (model) => protos[model.get 'originalProtocol']
+
+  byFavorite: (favoriteState) ->
+    return new ProxyList @.filter (model) => model.get('favoriteState') == favoriteState
+
+  byCountry: (countries) ->
+    return new ProxyList @.filter (model) => _.contains(countries, model.get('country')) || _.size(countries) == 0
+
+  getProtocols: ->
+    return _.uniq(@.pluck 'originalProtocol')
+
   changeFavorite: (model) ->
     browser.runtime.sendMessage(name: 'toggle-favorite', message: model.toJSON())

@@ -10,16 +10,20 @@ class ListView extends Backbone.View
     @template = Handlebars.templates['proxyList']
 
   events: ->
-    'click .refresh'  : () => @update(true)
-    'click .checkbox' : 'toggleFavorites'
-    'click .filter'   : 'toggleFilters'
+    'click .filter'                              : 'toggleFilterPanel'
+    'click .refresh'                             : () => @update(true)
+    'click .checkbox'                            : 'toggleFavorites'
+    'change [name="country"]'                    : 'updateCountryFilter'
+    'click .protocol-selector button'            : 'updateProtocolFilter'
 
   render: ->
     $(@el).html @template @model.toJSON()
 
-    @$table   = @$ '#proxy-list-box'
-    @$content = @$ '.content-wrapper'
-    @$filters = @$ '.filters'
+    @$table           = @$ '#proxy-list-box'
+    @$content         = @$ '.content-wrapper'
+    @$filters         = @$ '.filters'
+    @$countryFilter   = @$ '[name="country"]'
+    @$protocolButtons = @$ '.protocol-selector'
 
     @addAll()
 
@@ -42,7 +46,27 @@ class ListView extends Backbone.View
   addAll: ->
     @$table.empty()
 
-    _.each(@collection.where(favoriteState: @model.get 'isFavoriteEnabled'), @addOne, @)
+    @updateProtocolsIfNeeded(@collection.getProtocols())
+
+    filteredEntries = @collection
+      .byCountry @model.get('countryFilter')
+      .byProtocol @model.get('protocolFilter')
+      .byFavorite @model.get('isFavoriteEnabled')
+    _.each filteredEntries.models, @addOne, @
+
+    countryData = _.uniq @collection.map((a) => {
+      id: a.get 'country'
+      text: a.get 'country'
+      selected: _.contains(@model.get('countryFilter'),  a.get 'country')
+    }), (item, key, a) => item.text
+
+    @$countryFilter.select2 {
+      data: countryData
+      minimumResultsForSearch: -1,
+      placeholder: 'Country',
+      multiple: true
+      width: 'resolve'
+    }
 
     @model.stopRefreshProcess()
 
@@ -58,8 +82,30 @@ class ListView extends Backbone.View
   toggleFavorites: ->
     @model.set 'isFavoriteEnabled', !@model.get 'isFavoriteEnabled'
 
-  toggleFilters: ->
-    @$filters.toggle()
+  toggleFilterPanel: ->
+    @model.set 'isFilterPanelActive', !@model.get 'isFilterPanelActive'
+    @render();
+
+  updateCountryFilter: ->
+    @model.set 'countryFilter', @$countryFilter.val()
+    console.log @model.get 'countryFilter'
+    @addAll()
+
+  updateProtocolFilter: (e) ->
+    $button = @$(e.target)
+    $button.toggleClass 'active', !$button.hasClass('active');
+    @model.get('protocolFilter')[$button.text()] = $button.hasClass 'active'
+    @addAll()
+
+  updateProtocolsIfNeeded: (protos) ->
+    _.each protos, (newProtocol) =>
+      if _.isUndefined (@model.get 'protocolFilter')[newProtocol]
+        @model.get('protocolFilter')[newProtocol] = true
+        @$protocolButtons.appendChild '<button>' + newProtocol + '</button>'
+
+    @$protocolButtons.find('button').each (idx, button) =>
+      $(button).toggleClass 'active',  @model.get('protocolFilter')[do $(button).text]
+    return true
 
   onStateChange: (model) ->
     _.each(@collection.without(model), (proxy) -> proxy.set 'activeState', false) if model.get 'activeState'
