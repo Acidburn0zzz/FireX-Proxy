@@ -2,10 +2,9 @@ class Router extends Backbone.Router
   container: "#primary-content"
 
   routes: ->
-    'index'    : 'index',
-    'patterns' : 'patterns',
-    'favorite' : 'favorite'
-    
+    'index'     : 'index',
+    'blacklist' : 'blacklist',
+
   initialize: ->
     @mCollection = new Menu
     @pCollection = new ProxyList
@@ -17,6 +16,9 @@ class Router extends Backbone.Router
   index: ->
     $(@container).html new ListView(collection: @pCollection, model: new ProxyStateModel).render().el
 
+  blacklist: ->
+    $(@container).html new PatternPageView(collection: @bCollection, model: new PatternStateModel).render().el
+
   createMenu: ->
     new MenuView
       collection: @mCollection
@@ -26,3 +28,8 @@ class Router extends Backbone.Router
       icon        : 'list'
       placeholder : i18next.t "proxymenu"
       isActive    : true
+
+    @mCollection.create
+      resource    : '#/blacklist'
+      icon        : 'settings'
+      placeholder : i18next.t "blacklist"

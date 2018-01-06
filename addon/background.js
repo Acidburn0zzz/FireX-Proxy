@@ -1,4 +1,5 @@
 let proxyListSession = new Addresses();
+let blacklistSession = new Set();
 
 /**
  * Local storage data
@@ -10,6 +11,8 @@ browser.storage.local.get()
                 ...(storage.favorites || [])
                     .map(element => Object.assign(new Address(), element))
             );
+
+            blacklistSession = new Set(storage.blacklist || []);
         }
     );
 
@@ -52,7 +55,7 @@ browser.runtime.onConnect.addListener(
 );
 
 browser.runtime.onMessage.addListener(
-    async request => {
+    (request, sender, sendResponse) => {
         switch (request.name) {
             /**
              * Proxy connect
@@ -71,9 +74,11 @@ browser.runtime.onMessage.addListener(
              * Proxy disconnect
              */
             case 'disconnect':
-                await Connector.disconnect();
-
-                proxyListSession.disableAll();
+                Connector
+                    .disconnect()
+                    .then(
+                        () => proxyListSession.disableAll()
+                    );
 
                 break;
             /**
@@ -91,6 +96,37 @@ browser.runtime.onMessage.addListener(
                 browser.storage.local.set({
                     favorites: [...proxyListSession.byFavorite()]
                 });
+
+                break;
+            /**
+             * Remove an element from blacklist
+             */
+            case 'remove-blacklist':
+                blacklistSession.delete(request.message['address']);
+
+                browser.storage.local.set({
+                    blacklist: [...blacklistSession]
+                });
+
+                break;
+            /**
+             * Add an element to blacklist
+             */
+            case 'add-blacklist':
+                blacklistSession.add(request.message['address']);
+
+                browser.storage.local.set({
+                    blacklist: [...blacklistSession]
+                });
+
+                break;
+            /**
+             * Read blacklist
+             */
+            case 'get-blacklist':
+                sendResponse([
+                    ...blacklistSession
+                ]);
 
                 break;
         }

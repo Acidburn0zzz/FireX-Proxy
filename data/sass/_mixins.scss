@@ -53,3 +53,14 @@
   display: inline-block;
   cursor: pointer;
 }
+
+@mixin clearfix() {
+  &:before,
+  &:after {
+    content: "";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}

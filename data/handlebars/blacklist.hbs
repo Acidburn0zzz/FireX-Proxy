@@ -1,0 +1,15 @@
+<div class="right-panel">
+    {{#if isBlacklistEnabled}}
+        <div class="checkbox active"></div>
+    {{else}}
+        <div class="checkbox"></div>
+    {{/if}}
+    {{t 'blacklist'}}
+</div>
+<div id="blacklist-content">
+    <div class="content-wrapper"></div>
+    <form class="bottom-menu">
+        <input name="blacklist-element" placeholder="*://mozilla.com" type="text" autocomplete="off">
+        <button class="bottom-button done" type="submit"></button>
+    </form>
+</div>

@@ -59,15 +59,6 @@
       }
     }
   }
-  .filters {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #FFFFFF;
-    display: none;
-    box-shadow: 0 0 8px 2px $primaryColorLight;
-  }
 }
 
 .bottom-button {
@@ -139,10 +130,10 @@
   }
 }
 
-#pattern {
+#blacklist-content {
   .pattern {
-    line-height: 30px;
-    height: 30px;
+    @include clearfix();
+    line-height: 24px;
     padding: 10px;
     .validation {
       display: inline-block;
@@ -151,10 +142,9 @@
       }
     }
     .address {
-      display: inline-block;
-      vertical-align: top;
       color: #585858;
       cursor: text;
+      float: left;
     }
     i.remove {
       @include icon('../icons/icon-remove.png', 24px, 24px);
@@ -169,6 +159,13 @@
   .content-wrapper {
     height: 210px;
   }
+  .bottom-menu {
+    input[type="text"] {
+      width: 100%;
+      border: none;
+      padding: 5px 10px;
+    }
+  }
 }
 
 .right-panel {
@@ -177,11 +174,6 @@
   right: 10px;
   height: 50px;
   line-height: 50px;
-  i.filter {
-    @include icon('../icons/filter-16.png', 16px, 16px);
-    vertical-align: -4px;
-    margin-right: 14px;
-  }
 }
 
 .validation {
