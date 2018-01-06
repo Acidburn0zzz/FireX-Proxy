@@ -60,25 +60,25 @@
     }
   }
   .filters {
+    width: 100%;
     position: absolute;
     top: 50px;
     left: 0;
-    width: calc(100% - 50px);
     display: none;
     background-color: #FFFFFF;
     border-top: 1px solid $primaryColorLight;
-    padding: 10px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
     z-index: 500;
+    padding: 15px;
+    box-sizing: border-box;
     &.visible {
       display: block;
     }
-
     & > div {
       float: left;
       display: block;
       width: 100%;
       overflow: hidden;
-
       &:first-child {
         margin-bottom: 10px;
       }

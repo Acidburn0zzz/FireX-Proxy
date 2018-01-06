@@ -1,11 +1,13 @@
 class ListView extends Backbone.View
   initialize: ->
     @listenTo @collection, 'reset', @addAll
-    @listenTo @collection, 'change:favoriteState', @onChange
+    @listenTo @collection, 'change:favoriteState', @render
     @listenTo @collection, 'change:activeState', @onStateChange
 
     @listenTo @model, 'change:isFavoriteEnabled', @onCheckboxChange
     @listenTo @model, 'change:refreshProcess', @onRefreshProcess
+    @listenTo @model, 'change:countryFilter', @render
+    @listenTo @model, 'change:isFilterPanelActive', @render
 
     @template = Handlebars.templates['proxyList']
 
@@ -54,19 +56,19 @@ class ListView extends Backbone.View
       .byFavorite @model.get('isFavoriteEnabled')
     _.each filteredEntries.models, @addOne, @
 
-    countryData = _.uniq @collection.map((a) => {
-      id: a.get 'country'
-      text: a.get 'country'
-      selected: _.contains(@model.get('countryFilter'),  a.get 'country')
-    }), (item, key, a) => item.text
+    countryData = _.uniq @collection.map(
+      (element) =>
+        id       : element.get 'country'
+        text     : element.get 'country'
+        selected : _.contains(@model.get('countryFilter'),  element.get 'country')
+    ), (element) => element.text
 
-    @$countryFilter.select2 {
+    @$countryFilter.select2
       data: countryData
       minimumResultsForSearch: -1,
-      placeholder: 'Country',
+      placeholder: 'country',
       multiple: true
-      width: 'resolve'
-    }
+      width: '100%'
 
     @model.stopRefreshProcess()
 
@@ -84,12 +86,9 @@ class ListView extends Backbone.View
 
   toggleFilterPanel: ->
     @model.set 'isFilterPanelActive', !@model.get 'isFilterPanelActive'
-    @render();
 
   updateCountryFilter: ->
     @model.set 'countryFilter', @$countryFilter.val()
-    console.log @model.get 'countryFilter'
-    @addAll()
 
   updateProtocolFilter: (e) ->
     $button = @$(e.target)
@@ -101,14 +100,11 @@ class ListView extends Backbone.View
     _.each protos, (newProtocol) =>
       if _.isUndefined (@model.get 'protocolFilter')[newProtocol]
         @model.get('protocolFilter')[newProtocol] = true
-        @$protocolButtons.appendChild '<button>' + newProtocol + '</button>'
+
+        @$protocolButtons.append $("<button>").text(newProtocol)
 
     @$protocolButtons.find('button').each (idx, button) =>
-      $(button).toggleClass 'active',  @model.get('protocolFilter')[do $(button).text]
-    return true
+      $(button).toggleClass 'active', @model.get('protocolFilter')[do $(button).text]
 
   onStateChange: (model) ->
     _.each(@collection.without(model), (proxy) -> proxy.set 'activeState', false) if model.get 'activeState'
-
-  onChange: ->
-    @render()

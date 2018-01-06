@@ -9,7 +9,7 @@ const zip            = require('gulp-zip');
 const mainBowerFiles = require('main-bower-files');
 
 gulp.task('coffee', () => {
-    return gulp
+    gulp
         .src([
             './data/coffee/**/*.coffee'
         ])
@@ -21,7 +21,7 @@ gulp.task('coffee', () => {
 });
 
 gulp.task('sass', () => {
-    return gulp
+    gulp
         .src([
             './data/sass/**/*.scss'
         ])
@@ -30,7 +30,7 @@ gulp.task('sass', () => {
 });
 
 gulp.task('handlebars', () => {
-    return gulp
+    gulp
         .src([
             './data/handlebars/*.hbs'
         ])
@@ -49,19 +49,19 @@ gulp.task('handlebars', () => {
 gulp.task('bower', ['bower-js', 'bower-css']);
 
 gulp.task('bower-js', () => {
-    return gulp
+    gulp
         .src(mainBowerFiles("**/*.js"))
         .pipe(gulp.dest('./data/build/libs'));
 });
 
 gulp.task('bower-css', function () {
-    return gulp.src(mainBowerFiles("**/*.css"))
+    gulp.src(mainBowerFiles("**/*.css"))
         .pipe(concat('vendor.css'))
         .pipe(gulp.dest('./data/build'));
 });
 
 gulp.task('build:firefox', ['bower'], () => {
-    return gulp
+    gulp
         .src([
             'addon/*.js',
             'popup/*',
