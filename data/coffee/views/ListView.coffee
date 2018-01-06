@@ -106,7 +106,7 @@ class ListView extends Backbone.View
       (element) =>
         id       : element.get 'country'
         text     : element.get 'country'
-        selected : _.contains(@model.get('countryFilter'),  element.get 'country')
+        selected : _.contains(@model.get('countryFilter'), element.get 'country')
     ), (element) => element.text
 
     @$countryFilter.select2
