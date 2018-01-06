@@ -71,8 +71,8 @@ class ListView extends Backbone.View
     @model.set 'isFavoriteEnabled', !@model.get 'isFavoriteEnabled'
 
   toggleFilterPanel: ->
-    @$filters.toggleClass('visible', !@$filters.hasClass('visible'))
-    @$filterButton.toggleClass('active', !@$filterButton.hasClass('active'))
+    @$filters.toggleClass 'visible'
+    @$filterButton.toggleClass 'active'
 
   updateCountryFilter: ->
     @model.set 'countryFilter', @$countryFilter.val()
