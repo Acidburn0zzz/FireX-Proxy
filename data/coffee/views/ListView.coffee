@@ -49,7 +49,7 @@ class ListView extends Backbone.View
     @$table.empty()
 
     @updateProtocolsIfNeeded(@collection.getProtocols())
-    @renderProtocolButtons();
+    @renderProtocolButtons()
 
     filteredEntries = @collection
       .byCountry @model.get('countryFilter')
@@ -69,6 +69,7 @@ class ListView extends Backbone.View
 
   toggleFavorites: ->
     @model.set 'isFavoriteEnabled', !@model.get 'isFavoriteEnabled'
+    @onReset()
 
   toggleFilterPanel: ->
     @$filters.toggleClass 'visible'
@@ -76,21 +77,23 @@ class ListView extends Backbone.View
 
   updateCountryFilter: ->
     @model.set 'countryFilter', @$countryFilter.val()
+    @saveFilters();
 
   updateProtocolFilter: (e) ->
     $button = @$(e.target)
-    $button.toggleClass 'active', !$button.hasClass('active');
+    $button.toggleClass 'active', !$button.hasClass('active')
     @model.get('protocolFilter')[$button.text()] = $button.hasClass 'active'
+    @saveFilters();
     @addAll()
 
   updateProtocolsIfNeeded: (protos) ->
     _.each protos, (newProtocol) =>
       if _.isUndefined (@model.get 'protocolFilter')[newProtocol]
         @model.get('protocolFilter')[newProtocol] = true
-    @renderProtocolButtons();
+    @renderProtocolButtons()
 
   renderProtocolButtons: ->
-    @$protocolButtons.empty();
+    @$protocolButtons.empty()
 
     _.each (@model.get 'protocolFilter'), (proto, idx) =>
       @$protocolButtons.append $("<button>").text(idx)
@@ -116,4 +119,11 @@ class ListView extends Backbone.View
       multiple: true
       width: '100%'
 
-    @addAll();
+    @addAll()
+
+  saveFilters: ->
+    browser.storage.local.set({
+      filters:
+        protocolFilter: @model.get 'protocolFilter'
+        countryFilter: @model.get 'countryFilter'
+    })
