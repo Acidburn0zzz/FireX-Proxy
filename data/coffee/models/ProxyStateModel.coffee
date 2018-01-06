@@ -7,7 +7,6 @@ class ProxyStateModel extends Backbone.Model
     
   defaults: ->
     isFavoriteEnabled     : false
-    isFilterPanelActive   : false
     refreshProcess        : false
     protocolFilter        : {}
     countryFilter         : null

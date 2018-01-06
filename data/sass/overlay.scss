@@ -81,28 +81,32 @@
       overflow: hidden;
       &:first-child {
         margin-bottom: 10px;
+        text-align: center;
       }
       select {
         width: 100%;
       }
       .select2-selection {
         width: 100%;
-        border: 1px solid $primaryColor;
+        border: 1px solid $primaryColorLight;
         font-size: 12px;
         box-sizing: border-box;
         font-weight: 400;
         border-radius: 0;
       }
       button {
+        cursor: pointer;
         background: none;
         padding: 8px 15px;
-        border: 1px solid $primaryColor;
+        border: 1px solid $primaryColorLight;
+        color: $primaryColor;
         font-size: 12px;
         box-sizing: border-box;
         font-weight: 400;
         margin-right: 5px;
+        display: inline-block;
         &.active {
-          background-color: $primaryColor;
+          background-color: $primaryColorLight;
         }
       }
     }

@@ -1,13 +1,12 @@
 class ListView extends Backbone.View
   initialize: ->
-    @listenTo @collection, 'reset', @addAll
+    @listenTo @collection, 'reset', @onReset
     @listenTo @collection, 'change:favoriteState', @render
     @listenTo @collection, 'change:activeState', @onStateChange
 
     @listenTo @model, 'change:isFavoriteEnabled', @onCheckboxChange
     @listenTo @model, 'change:refreshProcess', @onRefreshProcess
-    @listenTo @model, 'change:countryFilter', @render
-    @listenTo @model, 'change:isFilterPanelActive', @render
+    @listenTo @model, 'change:countryFilter', @addAll
 
     @template = Handlebars.templates['proxyList']
 
@@ -23,6 +22,7 @@ class ListView extends Backbone.View
 
     @$table           = @$ '#proxy-list-box'
     @$content         = @$ '.content-wrapper'
+    @$filterButton    = @$ 'i.filter'
     @$filters         = @$ '.filters'
     @$countryFilter   = @$ '[name="country"]'
     @$protocolButtons = @$ '.protocol-selector'
@@ -49,27 +49,13 @@ class ListView extends Backbone.View
     @$table.empty()
 
     @updateProtocolsIfNeeded(@collection.getProtocols())
+    @renderProtocolButtons();
 
     filteredEntries = @collection
       .byCountry @model.get('countryFilter')
       .byProtocol @model.get('protocolFilter')
       .byFavorite @model.get('isFavoriteEnabled')
     _.each filteredEntries.models, @addOne, @
-
-    countryData = _.uniq @collection.map(
-      (element) =>
-        id       : element.get 'country'
-        text     : element.get 'country'
-        selected : _.contains(@model.get('countryFilter'),  element.get 'country')
-    ), (element) => element.text
-
-    @$countryFilter.select2
-      data: countryData
-      minimumResultsForSearch: -1,
-      placeholder: 'country',
-      multiple: true
-      width: '100%'
-
     @model.stopRefreshProcess()
 
   onCreateFavorite: (proxy) ->
@@ -85,7 +71,8 @@ class ListView extends Backbone.View
     @model.set 'isFavoriteEnabled', !@model.get 'isFavoriteEnabled'
 
   toggleFilterPanel: ->
-    @model.set 'isFilterPanelActive', !@model.get 'isFilterPanelActive'
+    @$filters.toggleClass('visible', !@$filters.hasClass('visible'))
+    @$filterButton.toggleClass('active', !@$filterButton.hasClass('active'))
 
   updateCountryFilter: ->
     @model.set 'countryFilter', @$countryFilter.val()
@@ -100,11 +87,33 @@ class ListView extends Backbone.View
     _.each protos, (newProtocol) =>
       if _.isUndefined (@model.get 'protocolFilter')[newProtocol]
         @model.get('protocolFilter')[newProtocol] = true
+    @renderProtocolButtons();
 
-        @$protocolButtons.append $("<button>").text(newProtocol)
+  renderProtocolButtons: ->
+    @$protocolButtons.empty();
+
+    _.each (@model.get 'protocolFilter'), (proto, idx) =>
+      @$protocolButtons.append $("<button>").text(idx)
 
     @$protocolButtons.find('button').each (idx, button) =>
       $(button).toggleClass 'active', @model.get('protocolFilter')[do $(button).text]
 
   onStateChange: (model) ->
     _.each(@collection.without(model), (proxy) -> proxy.set 'activeState', false) if model.get 'activeState'
+
+  onReset: ->
+    countryData = _.uniq @collection.map(
+      (element) =>
+        id       : element.get 'country'
+        text     : element.get 'country'
+        selected : _.contains(@model.get('countryFilter'),  element.get 'country')
+    ), (element) => element.text
+
+    @$countryFilter.select2
+      data: countryData
+      minimumResultsForSearch: -1,
+      placeholder: 'country',
+      multiple: true
+      width: '100%'
+
+    @addAll();
