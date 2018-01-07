@@ -12,6 +12,13 @@ browser.storage.local.get()
             );
         }
     );
+/**
+ * Clear filters
+ */
+browser.runtime.onStartup.addListener(
+    () =>
+        browser.storage.local.remove('filters')
+);
 
 /**
  * Message queue

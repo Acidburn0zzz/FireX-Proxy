@@ -18,11 +18,10 @@ class ProxyStateModel extends Backbone.Model
     @trigger('change')
 
   save: (key, val, options) ->
-    browser.storage.local.set({
+    browser.storage.local.set
       filters:
         protocolFilter: @get 'protocolFilter'
         countryFilter: @get 'countryFilter'
-    })
 
     return Backbone.Model.prototype.save.call(this, key, val, options)
 

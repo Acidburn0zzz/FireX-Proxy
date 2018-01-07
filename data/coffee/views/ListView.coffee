@@ -23,6 +23,7 @@ class ListView extends Backbone.View
     @$table           = @$ '#proxy-list-box'
     @$content         = @$ '.content-wrapper'
     @$filterButton    = @$ 'i.filter'
+    @$favoritesToggle = @$ '.checkbox'
     @$filters         = @$ '.filters'
     @$countryFilter   = @$ '[name="country"]'
     @$protocolButtons = @$ '.protocol-selector'
@@ -55,14 +56,16 @@ class ListView extends Backbone.View
       .byCountry @model.get('countryFilter')
       .byProtocol @model.get('protocolFilter')
       .byFavorite @model.get('isFavoriteEnabled')
+
     _.each filteredEntries.models, @addOne, @
+
     @model.stopRefreshProcess()
 
   onCreateFavorite: (proxy) ->
     @collection.add proxy
 
   onCheckboxChange: ->
-    @render()
+    @$favoritesToggle.toggleClass 'active'
     @onReset()
 
   onRefreshProcess: (model, value) ->
