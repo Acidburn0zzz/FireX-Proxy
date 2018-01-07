@@ -23,7 +23,7 @@ class ListView extends Backbone.View
     @$table           = @$ '#proxy-list-box'
     @$content         = @$ '.content-wrapper'
     @$filterButton    = @$ 'i.filter'
-    @$favoritesToggle = @$ '.checkbox'
+    @$favoritesToggle = @$ '.right-panel .checkbox'
     @$filters         = @$ '.filters'
     @$countryFilter   = @$ '[name="country"]'
     @$protocolButtons = @$ '.protocol-selector'
