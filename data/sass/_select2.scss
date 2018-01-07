@@ -4,15 +4,14 @@
   font-family: $primaryFont;
   font-size: 12px;
   font-weight: $defaultFontWeight;
-
   .select2-dropdown {
     border: 1px solid $primaryColorLight;
     .select2-results__options {
       max-height: 100px;
     }
   }
-
   .select2-results__option {
+    padding: 10px;
     &[aria-selected="true"], &.select2-results__option--highlighted {
       background-color: $primaryColorLight;
       color: $primaryColor;
