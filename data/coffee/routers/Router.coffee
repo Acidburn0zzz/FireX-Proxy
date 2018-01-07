@@ -15,13 +15,7 @@ class Router extends Backbone.Router
     @index()
     
   index: ->
-    browser.storage.local.get({
-      filters:
-        protocolFilter        : {}
-        countryFilter         : null
-    }).then((persistent) => $(@container).html new ListView(collection: @pCollection, model: new ProxyStateModel(persistent.filters)).render().el)
-      .catch(()          => $(@container).html new ListView(collection: @pCollection, model: new ProxyStateModel()).render().el)
-
+    $(@container).html new ListView(collection: @pCollection, model: new ProxyStateModel).render().el
 
   createMenu: ->
     new MenuView

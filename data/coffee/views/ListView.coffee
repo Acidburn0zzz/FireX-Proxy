@@ -63,13 +63,13 @@ class ListView extends Backbone.View
 
   onCheckboxChange: ->
     @render()
+    @onReset()
 
   onRefreshProcess: (model, value) ->
     @$content.toggleClass 'spinner', value
 
   toggleFavorites: ->
     @model.set 'isFavoriteEnabled', !@model.get 'isFavoriteEnabled'
-    @onReset()
 
   toggleFilterPanel: ->
     @$filters.toggleClass 'visible'
@@ -77,19 +77,20 @@ class ListView extends Backbone.View
 
   updateCountryFilter: ->
     @model.set 'countryFilter', @$countryFilter.val()
-    @saveFilters();
 
   updateProtocolFilter: (e) ->
     $button = @$(e.target)
-    $button.toggleClass 'active', !$button.hasClass('active')
-    @model.get('protocolFilter')[$button.text()] = $button.hasClass 'active'
-    @saveFilters();
+    $button.toggleClass 'active'
+
+    @model.setProtocolState($button.text(), $button.hasClass 'active')
+
     @addAll()
 
   updateProtocolsIfNeeded: (protos) ->
     _.each protos, (newProtocol) =>
-      if _.isUndefined (@model.get 'protocolFilter')[newProtocol]
-        @model.get('protocolFilter')[newProtocol] = true
+      if _.isUndefined @model.getProtocolState(newProtocol)
+        @model.setProtocolState(newProtocol, true)
+
     @renderProtocolButtons()
 
   renderProtocolButtons: ->
@@ -114,16 +115,11 @@ class ListView extends Backbone.View
 
     @$countryFilter.select2
       data: countryData
-      minimumResultsForSearch: -1,
-      placeholder: 'country',
+      minimumResultsForSearch: -1
+      placeholder: i18next.t 'country'
       multiple: true
+      maximumSelectionLength: 10
       width: '100%'
 
     @addAll()
 
-  saveFilters: ->
-    browser.storage.local.set({
-      filters:
-        protocolFilter: @model.get 'protocolFilter'
-        countryFilter: @model.get 'countryFilter'
-    })
