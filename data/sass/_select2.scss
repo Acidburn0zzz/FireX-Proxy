@@ -10,6 +10,11 @@
       max-height: 100px;
     }
   }
+
+  input {
+    line-height: 24px;
+  }
+
   .select2-results__option {
     padding: 10px;
     &[aria-selected="true"], &.select2-results__option--highlighted {
@@ -43,6 +48,9 @@
       margin-top: 5px;
     }
     .select2-selection__choice__remove{
+      &:hover {
+        color: darken($primaryColor, 10%);
+      }
       color: $primaryColor;
       margin-right: 6px;
       margin-left: 6px;
