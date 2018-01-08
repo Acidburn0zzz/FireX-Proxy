@@ -27,12 +27,9 @@ class ProxyStateModel extends Backbone.Model
 
   fetch: (options)  ->
     browser.storage.local.get('filters').then (persistent) =>
-      _.defaults persistent,
-        filters:
-          countryFilter: null,
-          protocolFilter: {}
-
-      @set(persistent.filters)
+      @set _.defaults persistent.filters,
+        countryFilter: null,
+        protocolFilter: {}
 
     return Backbone.Model.prototype.fetch.call(this, options)
 
@@ -43,7 +40,7 @@ class ProxyStateModel extends Backbone.Model
     @set 'refreshProcess', false
     
   defaults: ->
-    isFavoriteEnabled     : false
-    refreshProcess        : false
-    protocolFilter        : {}
-    countryFilter         : null
+    isFavoriteEnabled : false
+    refreshProcess    : false
+    protocolFilter    : {}
+    countryFilter     : null
